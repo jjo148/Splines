@@ -102,36 +102,36 @@ either expressed or implied, of the FreeBSD Project.
 //! Various kind of splines
 namespace Splines {
 
-  using namespace ::std; // load standard namespace
+  //using namespace ::std; // load standard namespace
 
   typedef double real_type; //!< Floating point type for splines
   typedef int    integer;   //!< Signed integer type for splines
-  typedef basic_ostream<char> ostream_type;
+  typedef std::basic_ostream<char> ostream_type;
 
   static
   inline
   bool
   isZero( real_type x )
-  { return FP_ZERO == fpclassify(x); }
+  { return FP_ZERO == std::fpclassify(x); }
 
   static
   inline
   bool
   isInfinite( real_type x )
-  { return FP_INFINITE == fpclassify(x); }
+  { return FP_INFINITE == std::fpclassify(x); }
 
   static
   inline
   bool
   isNaN( real_type x )
-  { return FP_NAN == fpclassify(x); }
+  { return FP_NAN == std::fpclassify(x); }
 
   static
   inline
   bool
   isRegular( real_type x )
-  { return !( FP_INFINITE == fpclassify(x) ||
-              FP_NAN      == fpclassify(x) ); }
+  { return !( FP_INFINITE == std::fpclassify(x) ||
+              FP_NAN      == std::fpclassify(x) ); }
 
   //! Associate a number for each type of splines implemented
   typedef enum { CONSTANT_TYPE   = 0,
@@ -147,7 +147,7 @@ namespace Splines {
 
   extern char const *spline_type[];
   
-  extern SplineType string_to_splineType( string const & n );
+  extern SplineType string_to_splineType( std::string const & n );
 
   #ifndef SPLINES_DO_NOT_USE_GENERIC_CONTAINER
   using GenericContainerNamespace::GenericContainer;
@@ -157,12 +157,12 @@ namespace Splines {
   using GenericContainerNamespace::map_type;
   #endif
 
-  pair<int,int>
+  std::pair<int,int>
   quadraticRoots( real_type const a[3],
                   real_type       real[2],
                   real_type       imag[2] );
 
-  pair<int,int>
+  std::pair<int,int>
   cubicRoots( real_type const a[4],
               real_type       real[3],
               real_type       imag[3] );
@@ -273,7 +273,7 @@ namespace Splines {
 
   private:
 
-    string      _name;
+    std::string _name;
     size_t      numTotValues;
     size_t      numTotReserved;
     size_t      numAllocated;
@@ -289,7 +289,7 @@ namespace Splines {
 
     //! malloc object constructor
     explicit
-    SplineMalloc( string const & __name )
+    SplineMalloc( std::string const & __name )
     : _name(__name)
     , numTotValues(0)
     , numTotReserved(0)
@@ -441,7 +441,7 @@ namespace Splines {
   class Spline {
   protected:
 
-    string _name;
+    std::string _name;
     bool   _check_range;
 
     integer   npts, npts_reserved;
@@ -470,7 +470,7 @@ namespace Splines {
   public:
 
     //! spline constructor
-    Spline( string const & name = "Spline", bool ck = false )
+    Spline( std::string const & name = "Spline", bool ck = false )
     : _name(name)
     , _check_range(ck)
     , npts(0)
@@ -485,7 +485,7 @@ namespace Splines {
     ~Spline()
     {}
     
-    string const & name() const { return _name; }
+    std::string const & name() const { return _name; }
 
     void setCheckRange( bool ck ) { _check_range = ck; }
     bool getCheckRange() const { return _check_range; }
@@ -589,8 +589,8 @@ namespace Splines {
     \*/
     inline
     void
-    build( vector<real_type> const & x,
-           vector<real_type> const & y ) {
+    build( std::vector<real_type> const & x,
+           std::vector<real_type> const & y ) {
       integer N = integer(x.size());
       if ( N > integer(y.size()) ) N = integer(y.size());
       build( &x.front(), 1, &y.front(), 1, N );
@@ -647,7 +647,7 @@ namespace Splines {
     dump( char const fname[],
           integer    nintervals,
           char const header[] = "x\ty" ) const
-    { ofstream file(fname); dump( file, nintervals, header ); file.close(); }
+    { std::ofstream file(fname); dump( file, nintervals, header ); file.close(); }
 
     ///////////////////////////////////////////////////////////////////////////
     //! Evaluate spline value
@@ -745,7 +745,7 @@ namespace Splines {
     using Spline::build;
 
     //! spline constructor
-    CubicSplineBase( string const & name = "CubicSplineBase", bool ck = false )
+    CubicSplineBase( std::string const & name = "CubicSplineBase", bool ck = false )
     : Spline(name,ck)
     , baseValue(name+"_memory")
     , Yp(nullptr)
@@ -848,9 +848,9 @@ namespace Splines {
     \*/
     inline
     void
-    build ( vector<real_type> const & x,
-            vector<real_type> const & y,
-            vector<real_type> const & yp ) {
+    build ( std::vector<real_type> const & x,
+            std::vector<real_type> const & y,
+            std::vector<real_type> const & yp ) {
       integer N = integer(x.size());
       if ( N > integer(y.size())  ) N = integer(y.size());
       if ( N > integer(yp.size()) ) N = integer(yp.size());
@@ -897,7 +897,7 @@ namespace Splines {
     using CubicSplineBase::reserve;
 
     //! spline constructor
-    CubicSpline( string const & name = "CubicSpline", bool ck = false )
+    CubicSpline( std::string const & name = "CubicSpline", bool ck = false )
     : CubicSplineBase( name, ck )
     , ddy0(0)
     , ddyn(0)
@@ -961,7 +961,7 @@ namespace Splines {
     using CubicSplineBase::reserve;
 
     //! spline constructor
-    AkimaSpline( string const & name = "AkimaSpline", bool ck = false )
+    AkimaSpline( std::string const & name = "AkimaSpline", bool ck = false )
     : CubicSplineBase( name, ck )
     {}
 
@@ -1001,7 +1001,7 @@ namespace Splines {
     using CubicSplineBase::reserve;
 
     //! spline constructor
-    BesselSpline( string const & name = "BesselSpline", bool ck = false )
+    BesselSpline( std::string const & name = "BesselSpline", bool ck = false )
     : CubicSplineBase( name, ck )
     {}
 
@@ -1046,7 +1046,7 @@ namespace Splines {
     using CubicSplineBase::reserve;
 
     //! spline constructor
-    PchipSpline( string const & name = "PchipSpline", bool ck = false )
+    PchipSpline( std::string const & name = "PchipSpline", bool ck = false )
     : CubicSplineBase( name, ck )
     {}
 
@@ -1085,7 +1085,7 @@ namespace Splines {
 
     using Spline::build;
 
-    LinearSpline( string const & name = "LinearSpline", bool ck = false )
+    LinearSpline( std::string const & name = "LinearSpline", bool ck = false )
     : Spline(name,ck)
     , baseValue( name+"_memory")
     , _external_alloc(false)
@@ -1196,7 +1196,7 @@ namespace Splines {
 
     using Spline::build;
 
-    ConstantSpline( string const & name = "ConstantSpline", bool ck = false )
+    ConstantSpline( std::string const & name = "ConstantSpline", bool ck = false )
     : Spline(name,ck)
     , baseValue(name+"_memory")
     , _external_alloc(false)
@@ -1299,7 +1299,7 @@ namespace Splines {
     using CubicSplineBase::reserve;
 
     //! spline constructor
-    HermiteSpline( string const & name = "HermiteSpline", bool ck = false )
+    HermiteSpline( std::string const & name = "HermiteSpline", bool ck = false )
     : CubicSplineBase( name, ck )
     {}
 
@@ -1364,7 +1364,7 @@ namespace Splines {
     using Spline::build;
 
     //! spline constructor
-    QuinticSplineBase( string const & name = "Spline", bool ck = false )
+    QuinticSplineBase( std::string const & name = "Spline", bool ck = false )
     : Spline(name,ck)
     , baseValue(name+"_memeory")
     , Yp(nullptr)
@@ -1482,7 +1482,7 @@ namespace Splines {
     using QuinticSplineBase::reserve;
 
     //! spline constructor
-    QuinticSpline( string const & name = "Spline", bool ck = false )
+    QuinticSpline( std::string const & name = "Spline", bool ck = false )
     : QuinticSplineBase( name, ck )
     {}
 
@@ -1515,7 +1515,7 @@ namespace Splines {
 
   protected:
 
-    string const _name;
+    std::string const _name;
 
     SplineMalloc<real_type>  baseValue;
     SplineMalloc<real_type*> basePointer;
@@ -1554,13 +1554,13 @@ namespace Splines {
   public:
 
     //! spline constructor
-    SplineVec( string const & name = "SplineVec" );
+    SplineVec( std::string const & name = "SplineVec" );
 
     //! spline destructor
     virtual
     ~SplineVec();
 
-    string const &
+    std::string const &
     name() const
     { return _name; }
 
@@ -1657,19 +1657,19 @@ namespace Splines {
 
     //! Evaluate all the splines at `x`
     void
-    eval( real_type x, vector<real_type> & vals ) const;
+    eval( real_type x, std::vector<real_type> & vals ) const;
 
     //! Evaluate the fist derivative of all the splines at `x`
     void
-    eval_D( real_type x, vector<real_type> & vals ) const;
+    eval_D( real_type x, std::vector<real_type> & vals ) const;
 
     //! Evaluate the second derivative of all the splines at `x`
     void
-    eval_DD( real_type x, vector<real_type> & vals ) const;
+    eval_DD( real_type x, std::vector<real_type> & vals ) const;
 
     //! Evaluate the third derivative of all the splines at `x`
     void
-    eval_DDD( real_type x, vector<real_type> & vals ) const;
+    eval_DDD( real_type x, std::vector<real_type> & vals ) const;
 
     // interface with GenericContainer
     #ifndef SPLINES_DO_NOT_USE_GENERIC_CONTAINER
@@ -1776,7 +1776,7 @@ namespace Splines {
 
   protected:
 
-    string const _name;
+    std::string const _name;
 
     SplineMalloc<real_type>  baseValue;
     SplineMalloc<real_type*> basePointer;
@@ -1794,9 +1794,9 @@ namespace Splines {
     mutable integer lastInterval;
     integer search( real_type x ) const;
     
-    vector<Spline*>     splines;
-    vector<int>         is_monotone;
-    map<string,integer> header_to_position;
+    std::vector<Spline*>     splines;
+    std::vector<int>         is_monotone;
+    std::map<std::string,integer> header_to_position;
 
   private:
 
@@ -1810,17 +1810,17 @@ namespace Splines {
   public:
 
     //! spline constructor
-    SplineSet( string const & name = "SplineSet" );
+    SplineSet( std::string const & name = "SplineSet" );
 
     //! spline destructor
     virtual
     ~SplineSet();
 
-    string const &
+    std::string const &
     name() const
     { return _name; }
 
-    string const &
+    std::string const &
     header( integer i ) const
     { return splines[size_t(i)]->name(); }
 
@@ -1971,12 +1971,12 @@ namespace Splines {
     // vectorial values
     //! fill a vector of strings with the names of the splines
     void
-    getHeaders( vector<string> & h ) const;
+    getHeaders( std::vector<std::string> & h ) const;
 
     //! Evaluate all the splines at `x`
     void
     eval( real_type           x,
-          vector<real_type> & vals ) const;
+          std::vector<real_type> & vals ) const;
 
     //! Evaluate all the splines at `x`
     void
@@ -1987,7 +1987,7 @@ namespace Splines {
     //! Evaluate the fist derivative of all the splines at `x`
     void
     eval_D( real_type           x,
-            vector<real_type> & vals ) const;
+            std::vector<real_type> & vals ) const;
 
     //! Evaluate the fist derivative of all the splines at `x`
     void
@@ -1998,7 +1998,7 @@ namespace Splines {
     //! Evaluate the second derivative of all the splines at `x`
     void
     eval_DD( real_type           x,
-             vector<real_type> & vals ) const;
+             std::vector<real_type> & vals ) const;
 
     //! Evaluate the second derivative of all the splines at `x`
     void
@@ -2009,7 +2009,7 @@ namespace Splines {
     //! Evaluate the third derivative of all the splines at `x`
     void
     eval_DDD( real_type           x,
-              vector<real_type> & vals ) const;
+              std::vector<real_type> & vals ) const;
 
     //! Evaluate the third derivative of all the splines at `x`
     void
@@ -2022,7 +2022,7 @@ namespace Splines {
     void
     eval2( integer             spl,
            real_type           zeta,
-           vector<real_type> & vals ) const;
+           std::vector<real_type> & vals ) const;
 
     //! Evaluate all the splines at `zeta` using spline[spl] as independent
     void
@@ -2038,7 +2038,7 @@ namespace Splines {
     void
     eval2_D( integer             spl,
              real_type           zeta,
-             vector<real_type> & vals ) const;
+             std::vector<real_type> & vals ) const;
 
     /*!
      | Evaluate the fist derivative of all the splines
@@ -2057,7 +2057,7 @@ namespace Splines {
     void
     eval2_DD( integer             spl,
               real_type           zeta,
-              vector<real_type> & vals ) const;
+              std::vector<real_type> & vals ) const;
 
     /*!
      | Evaluate the second derivative of all the splines
@@ -2076,7 +2076,7 @@ namespace Splines {
     void
     eval2_DDD( integer             spl,
                real_type           zeta,
-               vector<real_type> & vals ) const;
+               std::vector<real_type> & vals ) const;
 
     /*!
      | Evaluate the 3rd derivative of all the splines
@@ -2695,10 +2695,10 @@ namespace Splines {
 
   protected:
   
-    string const _name;
+    std::string const _name;
     bool         _check_range;
 
-    vector<real_type> X, Y, Z;
+    std::vector<real_type> X, Y, Z;
     
     real_type Z_min, Z_max;
 
@@ -2757,7 +2757,7 @@ namespace Splines {
   public:
 
     //! spline constructor
-    SplineSurf( string const & name = "Spline", bool ck = false )
+    SplineSurf( std::string const & name = "Spline", bool ck = false )
     : _name(name)
     , _check_range(ck)
     , X()
@@ -2773,7 +2773,7 @@ namespace Splines {
     virtual
     ~SplineSurf();
 
-    string const &
+    std::string const &
     name() const
     { return _name; }
 
@@ -2877,9 +2877,9 @@ namespace Splines {
      | \param transposed      if true matrix Z is stored transposed
     \*/
     void
-    build( vector<real_type> const & x,
-           vector<real_type> const & y,
-           vector<real_type> const & z,
+    build( std::vector<real_type> const & x,
+           std::vector<real_type> const & y,
+           std::vector<real_type> const & z,
            bool fortran_storage = false,
            bool transposed      = false ) {
       bool xyswp = (fortran_storage && transposed) ||
@@ -2917,7 +2917,7 @@ namespace Splines {
      | \param transposed      if true matrix Z is stored transposed
     \*/
     void
-    build( vector<real_type> const & z,
+    build( std::vector<real_type> const & z,
            integer                   nx,
            integer                   ny,
            bool fortran_storage = false,
@@ -3010,7 +3010,7 @@ namespace Splines {
     type_name() const SPLINES_PURE_VIRTUAL;
 
     void
-    info( ostream & s ) const;
+    info( std::ostream & s ) const;
 
   };
 
@@ -3028,7 +3028,7 @@ namespace Splines {
   public:
   
     //! spline constructor
-    BilinearSpline( string const & name = "Spline", bool ck = false )
+    BilinearSpline( std::string const & name = "Spline", bool ck = false )
     : SplineSurf(name,ck)
     {}
     
@@ -3099,7 +3099,7 @@ namespace Splines {
   class BiCubicSplineBase : public SplineSurf {
   protected:
   
-    vector<real_type> DX, DY, DXY;
+    std::vector<real_type> DX, DY, DXY;
     mutable real_type u[4];
     mutable real_type u_D[4];
     mutable real_type u_DD[4];
@@ -3113,7 +3113,7 @@ namespace Splines {
   public:
   
     //! spline constructor
-    BiCubicSplineBase( string const & name = "Spline", bool ck = false )
+    BiCubicSplineBase( std::string const & name = "Spline", bool ck = false )
     : SplineSurf( name, ck )
     , DX()
     , DY()
@@ -3186,7 +3186,7 @@ namespace Splines {
   public:
   
     //! spline constructor
-    BiCubicSpline( string const & name = "Spline", bool ck = false )
+    BiCubicSpline( std::string const & name = "Spline", bool ck = false )
     : BiCubicSplineBase( name, ck )
     {}
     
@@ -3221,7 +3221,7 @@ namespace Splines {
   public:
   
     //! spline constructor
-    Akima2Dspline( string const & name = "Spline", bool ck = false )
+    Akima2Dspline( std::string const & name = "Spline", bool ck = false )
     : BiCubicSplineBase( name, ck )
     {}
     
@@ -3253,7 +3253,7 @@ namespace Splines {
   class BiQuinticSplineBase : public SplineSurf {
   protected:
 
-    vector<real_type> DX, DXX, DY, DYY, DXY, DXYY, DXXY, DXXYY;
+    std::vector<real_type> DX, DXX, DY, DYY, DXY, DXYY, DXXY, DXXYY;
     mutable real_type u[6];
     mutable real_type u_D[6];
     mutable real_type u_DD[6];
@@ -3267,7 +3267,7 @@ namespace Splines {
   public:
   
     //! spline constructor
-    BiQuinticSplineBase( string const & name = "Spline", bool ck = false )
+    BiQuinticSplineBase( std::string const & name = "Spline", bool ck = false )
     : SplineSurf( name, ck )
     , DX()
     , DXX()
@@ -3350,7 +3350,7 @@ namespace Splines {
   public:
   
     //! spline constructor
-    BiQuinticSpline( string const & name = "Spline", bool ck = false )
+    BiQuinticSpline( std::string const & name = "Spline", bool ck = false )
     : BiQuinticSplineBase( name, ck )
     {}
     
